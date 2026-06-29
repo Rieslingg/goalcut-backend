@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+.venv/
+venv/
+
+# Временные файлы обработки
+/tmp/goalcut/
+
+# Музыка (не коммитим тяжёлые MP3, добавляем вручную)
+music/*.mp3
+music/*.wav
+
+# OS
+.DS_Store
+Thumbs.db
