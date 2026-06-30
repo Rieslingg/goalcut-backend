@@ -10,6 +10,8 @@ from pathlib import Path
 from typing import Optional
 
 import boto3
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from botocore.config import Config
 from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks, Form
 from fastapi.middleware.cors import CORSMiddleware
@@ -35,7 +37,12 @@ s3 = boto3.client(
     endpoint_url=B2_ENDPOINT,
     aws_access_key_id=B2_KEY_ID,
     aws_secret_access_key=B2_APP_KEY,
-    config=Config(signature_version="s3v4"),
+    config=Config(
+        signature_version="s3v4",
+        connect_timeout=60,
+        read_timeout=300,
+    ),
+    verify=False,  # Backblaze иногда возвращает истёкший SSL cert
 )
 
 # ─── JOB STORE (in-memory, для MVP) ───────────────────────────────────────────
