@@ -78,6 +78,21 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/test-b2")
+def test_b2():
+    """Проверяет подключение к Backblaze B2."""
+    try:
+        response = s3.list_objects_v2(Bucket=B2_BUCKET, MaxKeys=1)
+        return {
+            "status": "ok",
+            "bucket": B2_BUCKET,
+            "endpoint": B2_ENDPOINT,
+            "objects": response.get("KeyCount", 0),
+        }
+    except Exception as e:
+        return {"status": "error", "error": str(e), "bucket": B2_BUCKET, "endpoint": B2_ENDPOINT}
+
+
 @app.post("/upload", response_model=JobStatus)
 async def upload_video(
     background_tasks: BackgroundTasks,

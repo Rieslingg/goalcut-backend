@@ -221,7 +221,19 @@ def make_zip(clip_paths: list[str], zip_path: str):
 
 def upload_to_b2(s3_client, bucket: str, local_path: str, key: str) -> str:
     """Загружает файл в Backblaze B2, возвращает ключ объекта."""
-    s3_client.upload_file(local_path, bucket, key)
+    from boto3.s3.transfer import TransferConfig
+    # Отключаем multipart — Backblaze B2 иногда не поддерживает его через S3 API
+    config = TransferConfig(
+        multipart_threshold=1024 * 1024 * 1024,  # 1 ГБ — фактически отключает multipart
+        max_concurrency=1,
+        use_threads=False,
+    )
+    s3_client.upload_file(
+        local_path,
+        bucket,
+        key,
+        Config=config,
+    )
     return key
 
 
